@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Scores.Api.Business.Mappers;
+using Scores.Api.Business.Services;
+using Scores.Api.Data;
 
 namespace Scores.Api
 {
@@ -27,6 +29,9 @@ namespace Scores.Api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Scores.Api", Version = "v1" });
             });
+
+            services.AddSingleton<IScoresRepository, ScoresRepository>();
+            services.AddScoped<IScoresService, ScoresService>();
 
             services.AddAutoMapper(typeof(ScoreMapperProfile));
         }
