@@ -8,7 +8,7 @@
 
 ## Setup
 
-- [] Install [.NET 5 SDK](https://dotnet.microsoft.com/download). This will also install the .NET App Runtime
+- [ ] Install [.NET 5 SDK](https://dotnet.microsoft.com/download). This will also install the .NET App Runtime
 
 
 ## Other
