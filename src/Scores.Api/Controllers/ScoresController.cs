@@ -30,6 +30,8 @@ namespace Scores.Api.Controllers
 
         [HttpGet]
         [Route("{number}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
         public async Task<IActionResult> GetScoresGreaterThan([FromRoute] int? number)
         {
             if (!number.HasValue)
@@ -53,6 +55,8 @@ namespace Scores.Api.Controllers
 
         [HttpPost]
         [Route("{player}")]
+        [Consumes("application/json")]
+        [Produces("application/text")]
         public async Task<IActionResult> UpdatePlayerScore([FromRoute]string player, [FromBody] ScoresRequest payload)
         {
             if (string.IsNullOrWhiteSpace(player) || payload == null)
