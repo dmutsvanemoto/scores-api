@@ -8,6 +8,6 @@ namespace Scores.Api.Business.Services
     public interface IScoresService
     {
         Task<IList<ScoresResponse>> GetScoresGreaterThan(int number);
-        Task UpdatePlayerScore(ScoresRequest payload);
+        Task UpdateScore(string player, ScoresRequest payload);
     }
 }

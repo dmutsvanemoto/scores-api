@@ -69,7 +69,7 @@ namespace Scores.Api.Controllers
                     return BadRequest("Player does not exist!");
                 }
 
-                await _scoresService.UpdatePlayerScore(payload);
+                await _scoresService.UpdateScore(player, payload);
 
                 return NoContent();
             }

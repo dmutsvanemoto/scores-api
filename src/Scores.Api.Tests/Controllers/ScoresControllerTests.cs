@@ -94,7 +94,7 @@ namespace Scores.Api.Tests.Controllers
                 .ReturnsAsync(new ScoreModel());
 
             _mockScoresService
-                .Setup(x => x.UpdatePlayerScore(It.IsAny<ScoresRequest>()))
+                .Setup(x => x.UpdateScore(It.IsAny<string>(), It.IsAny<ScoresRequest>()))
                 .ThrowsAsync(expectedException);
 
             var controller = new ScoresController(_mockLogger, _mockScoresService.Object, _mockScoresRepository.Object);
@@ -156,7 +156,7 @@ namespace Scores.Api.Tests.Controllers
                 .ReturnsAsync(new ScoreModel());
 
             _mockScoresService
-                .Setup(x => x.UpdatePlayerScore(It.IsAny<ScoresRequest>()))
+                .Setup(x => x.UpdateScore(It.Is<string>(o => o == "Dave"), It.IsAny<ScoresRequest>()))
                 .Returns(Task.CompletedTask);
 
             var controller = new ScoresController(_mockLogger, _mockScoresService.Object, _mockScoresRepository.Object);
