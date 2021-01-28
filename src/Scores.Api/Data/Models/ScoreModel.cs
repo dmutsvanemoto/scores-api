@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Scores.Api.Data.Models
 {
-    public class ScoresModel
+    public class ScoreModel
     {
         public string Player { get; set; }
         public int Score { get; set; }
