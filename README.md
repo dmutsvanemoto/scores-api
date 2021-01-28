@@ -3,7 +3,7 @@
 ## Requirements
 
 - Be able to get scores above a specified number
-- Be able to create new scores
+- Be able to update scores for a given player
 - Data must be stored in `./data/scores.json`
 
 ## Setup
