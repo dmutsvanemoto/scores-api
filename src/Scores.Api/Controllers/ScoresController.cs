@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Scores.Api.Business.Services;
+using Scores.Api.Data;
 using Scores.Api.Data.Models.Requests;
 
 namespace Scores.Api.Controllers
@@ -18,11 +19,13 @@ namespace Scores.Api.Controllers
     {
         private readonly ILogger<ScoresController> _logger;
         private readonly IScoresService _scoresService;
+        private readonly IScoresRepository _scoresRepository;
 
-        public ScoresController(ILogger<ScoresController> logger, IScoresService scoresService)
+        public ScoresController(ILogger<ScoresController> logger, IScoresService scoresService, IScoresRepository scoresRepository)
         {
             _logger = logger;
             _scoresService = scoresService;
+            _scoresRepository = scoresRepository;
         }
 
         [HttpGet]
