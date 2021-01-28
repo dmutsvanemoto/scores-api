@@ -52,23 +52,30 @@ namespace Scores.Api.Controllers
         }
 
         [HttpPost]
-        [Route("")]
-        public async Task<IActionResult> CreateScore([FromBody] ScoresRequest payload)
+        [Route("{player}")]
+        public async Task<IActionResult> UpdatePlayerScore([FromRoute]string player, [FromBody] ScoresRequest payload)
         {
-            if (payload == null)
+            if (string.IsNullOrWhiteSpace(player) || payload == null)
             {
-                return BadRequest("Unrecognized payload");
+                return BadRequest();
             }
 
             try
             {
-                await _scoresService.CreateScore(payload);
+                var score = await _scoresRepository.GetScoreByPlayer(player);
+
+                if (score == null)
+                {
+                    return BadRequest("Player does not exist!");
+                }
+
+                await _scoresService.UpdatePlayerScore(payload);
 
                 return NoContent();
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, $"Failed to {nameof(CreateScore)} with payload {JsonSerializer.Serialize(payload)}");
+                _logger.LogError(exception, $"Failed to {nameof(UpdatePlayerScore)} with payload {JsonSerializer.Serialize(payload)}");
             }
 
             return StatusCode((int)HttpStatusCode.InternalServerError, "Oops something went wrong!");

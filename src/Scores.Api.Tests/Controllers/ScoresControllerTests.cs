@@ -10,6 +10,7 @@ using Moq;
 using Scores.Api.Business.Services;
 using Scores.Api.Controllers;
 using Scores.Api.Data;
+using Scores.Api.Data.Models;
 using Scores.Api.Data.Models.Requests;
 using Scores.Api.Data.Models.Responses;
 using Xunit;
@@ -88,8 +89,12 @@ namespace Scores.Api.Tests.Controllers
         {
             var expectedException = new ArgumentNullException();
 
+            _mockScoresRepository
+                .Setup(x => x.GetScoreByPlayer(It.IsAny<string>()))
+                .ReturnsAsync(new ScoreModel());
+
             _mockScoresService
-                .Setup(x => x.CreateScore(It.IsAny<ScoresRequest>()))
+                .Setup(x => x.UpdatePlayerScore(It.IsAny<ScoresRequest>()))
                 .ThrowsAsync(expectedException);
 
             var controller = new ScoresController(_mockLogger, _mockScoresService.Object, _mockScoresRepository.Object);
@@ -99,18 +104,46 @@ namespace Scores.Api.Tests.Controllers
                 StatusCode = (int)HttpStatusCode.InternalServerError
             };
 
-            var actual = await controller.CreateScore(new ScoresRequest());
+            var actual = await controller.UpdatePlayerScore("Dave", new ScoresRequest());
 
             actual.Should().BeEquivalentTo(expected);
         }
 
-        [Fact]
-        public async Task CreateScore_When_Number_Is_NULL_Then_Return_BadRequest()
+        [Theory]
+        [MemberData(nameof(UpdatePlayerScoreData))]
+        public async Task CreateScore_When_Request_Is_Invalid_Then_Return_BadRequest(string player, ScoresRequest payload)
         {
             var controller = new ScoresController(_mockLogger, _mockScoresService.Object, _mockScoresRepository.Object);
 
-            var expected = new BadRequestObjectResult("Unrecognized payload");
-            var actual = await controller.CreateScore(null);
+            var expected = new BadRequestResult();
+            var actual = await controller.UpdatePlayerScore(player, payload);
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        public static TheoryData<string, ScoresRequest> UpdatePlayerScoreData => new TheoryData<string, ScoresRequest>
+        {
+            { string.Empty, new ScoresRequest() },
+            { null, new ScoresRequest() },
+            { string.Empty, null },
+            { null, null },
+            { "Dave", new ScoresRequest() },
+            { "Dave", null },
+            { "Dave", new ScoresRequest() { Score = -1 } },
+            { "Dave", new ScoresRequest() { Score = 1239 } },
+        };
+
+        [Fact]
+        public async Task CreateScore_When_Player_Does_Not_Exist_Then_Return_BadRequest()
+        {
+            _mockScoresRepository
+                .Setup(x => x.GetScoreByPlayer(It.IsAny<string>()))
+                .ReturnsAsync(null as ScoreModel);
+
+            var controller = new ScoresController(_mockLogger, _mockScoresService.Object, _mockScoresRepository.Object);
+
+            var expected = new BadRequestObjectResult("Player does not exist!");
+            var actual = await controller.UpdatePlayerScore("Unknown", new ScoresRequest());
 
             actual.Should().BeEquivalentTo(expected);
         }
@@ -118,14 +151,18 @@ namespace Scores.Api.Tests.Controllers
         [Fact]
         public async Task CreateScore_When_Payload_Is_Valid_Then_Return_NoContent()
         {
+            _mockScoresRepository
+                .Setup(x => x.GetScoreByPlayer(It.IsAny<string>()))
+                .ReturnsAsync(new ScoreModel());
+
             _mockScoresService
-                .Setup(x => x.CreateScore(It.IsAny<ScoresRequest>()))
+                .Setup(x => x.UpdatePlayerScore(It.IsAny<ScoresRequest>()))
                 .Returns(Task.CompletedTask);
 
             var controller = new ScoresController(_mockLogger, _mockScoresService.Object, _mockScoresRepository.Object);
 
             var expectedResponse = new NoContentResult();
-            var actual = await controller.CreateScore(new ScoresRequest{ Player = "Dave", Score = 123 });
+            var actual = await controller.UpdatePlayerScore("Dave", new ScoresRequest{ Score = 123 });
 
             actual.Should().BeEquivalentTo(expectedResponse);
 
